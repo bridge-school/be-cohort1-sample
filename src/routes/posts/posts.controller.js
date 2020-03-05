@@ -14,10 +14,9 @@ const getPostById = (req, res) => {
 
   if (!postOrNull) {
     res.status(404).send('Post not found!');
-  } else {
-    res.status(200);
-    return res.json(postOrNull);
   }
+  res.status(200);
+  return res.json(postOrNull);
 };
 
 const createPost = async (req, res) => {
@@ -34,8 +33,53 @@ const createPost = async (req, res) => {
   return res.json(newPost);
 };
 
+const updatePostById = async (req, res) => {
+  const { id } = req.body.id;
+  const postOrNull = postsData.find(post => post.id === id);
+  let updatedPost;
+
+  if (!postOrNull) {
+    res.status(404).send('Post not found!');
+  }
+
+  const updateDatabase = postsData.map(post => {
+    if (post.id === id) {
+      updatedPost = {
+        ...post,
+        ...req.body
+      };
+      return updatedPost;
+    }
+  });
+
+  await writeFile('src/db/data.json', JSON.stringify(updateDatabase));
+
+  res.status(200);
+
+  return res.json(updatedPost);
+};
+
+const deletePostById = async (req, res) => {
+  const { id } = req.body.id;
+  const postOrNull = postsData.find(post => post.id === id);
+
+  if (!postOrNull) {
+    res.status(404).send('Post not found!');
+  }
+
+  const updateDatabase = postsData.filter(post => id !== post.id);
+
+  await writeFile('src/db/data.json', JSON.stringify(updateDatabase));
+
+  res.status(200);
+
+  return res.json(id);
+};
+
 module.exports = {
   getAllPosts,
   getPostById,
-  createPost
+  createPost,
+  updatePostById,
+  deletePostById
 };
