@@ -27,7 +27,8 @@ const postGreatReads = async (req, res) => {
 
 const updateGreatReads = async (req, res) => {
   const bookId = req.params.bookId;
-  const isBookUpdated = Boolean(greatReadsData.allBooks.find(book => bookId === book.bookID));
+  const isBookUpdated = typeof greatReadsData.allBooks.find(book => bookId === book.bookID)
+    !== "undefined";
   const updatedGreadReadsData = {
     allBooks: [...greatReadsData.allBooks.filter(book => bookId !== book.bookID),
       {...req.body, bookID: bookId}
@@ -35,8 +36,7 @@ const updateGreatReads = async (req, res) => {
   };
   await writeFile("db/greatreads.data.json", JSON.stringify(updatedGreadReadsData));
   if(isBookUpdated) {
-    res.status(204);
-    return res.json({});
+    return res.status(204).send("Book found and updated.");
   }
   res.status(201);
   return res.json({
@@ -45,8 +45,23 @@ const updateGreatReads = async (req, res) => {
   });
 };
 
+const deleteGreatReads = async (req, res) => {
+  const bookId = req.params.bookId;
+  const isBookInDb = typeof greatReadsData.allBooks.find(book => bookId === book.bookID)
+    !== "undefined";
+  const updatedGreadReadsData = {
+    allBooks: [...greatReadsData.allBooks.filter(book => bookId !== book.bookID)]
+  };
+  await writeFile("db/greatreads.data.json", JSON.stringify(updatedGreadReadsData));
+  if(isBookInDb) {
+    return res.status(204).send("Book(s) deleted.");
+  }
+  return res.status(404).send("Book(s) not found");
+};
+
 module.exports = {
   listGreatReads,
   postGreatReads,
-  updateGreatReads
+  updateGreatReads,
+  deleteGreatReads
 };
