@@ -3,40 +3,42 @@ const { promisify } = require("util");
 const writeFile = promisify(fs.writeFile);
 const { validationResult } = require("express-validator");
 
-const booksData = require("../../../db/books.json");
+const { ErrorHandler } = require("../../middleware/utils")
 const { getErrorMessage } = require('./utils')
+const { STATUS_CODES } = require('../../constants')
+const booksData = require("../../../db/books.json");
 
 const deleteBooks = async (req, res) => {
     await writeFile("db/books.json", JSON.stringify([]));
 
     return res
-        .status(201)
+        .status(STATUS_CODES["OK"])
         .json({
             data: booksData,
         })
 }
 
-const deleteBooksById = async (req, res) => {
+const deleteBooksById = async (req, res, next) => {
     const { bookId } = req.params;
-    const bookIndex = booksData.findIndex(({ bookID }) => bookID === bookId);
+    const bookIndex = booksData.findIndex(({ bookID }) => bookID === bookId)
 
     if (bookIndex === -1) {
         return res
-            .status(404)
+            .status(STATUS_CODES["NOT_FOUND"])
             .json({
                 errors: [{
-                    message: getErrorMessage(bookId),
+                    msg: getErrorMessage(bookId)
                 }]
-            })
+            });
     }
 
     const updatedBooksData = [...booksData]
     const deletedBook = updatedBooksData.splice(bookIndex, 1);
 
-    await writeFile("db/books.json", JSON.stringify(updatedBooksData));
+    await writeFile("db/books.json", JSON.stringify(updatedBooksData)).catch(error => console.log(error))
 
     return res
-        .status(201)
+        .status(STATUS_CODES["OK"])
         .json({
             data: deletedBook
         })
@@ -44,7 +46,7 @@ const deleteBooksById = async (req, res) => {
 
 const getBooks = (req, res) => {
     return res
-        .status(200)
+        .status(STATUS_CODES["OK"])
         .json({
             data: booksData,
         })
@@ -55,17 +57,12 @@ const getBooksById = (req, res) => {
     const selectedBook = booksData.filter(({ bookID }) => bookID === bookId);
 
     if (!selectedBook.length) {
-        return res
-            .status(404)
-            .json({
-                errors: [{
-                    message: getErrorMessage(bookId),
-                }]
-            })
+        const errors = [{ msg: getErrorMessage(bookId) }]
+        throw new ErrorHandler(STATUS_CODES["NOT_FOUND"], errors)
     }
 
     return res
-        .status(200)
+        .status(STATUS_CODES["OK"])
         .json({
             data: selectedBook,
         })
@@ -74,7 +71,9 @@ const getBooksById = (req, res) => {
 const postBooks = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res
+            .status(STATUS_CODES["UNPROCESSABLE_ENTITY"])
+            .json({ errors: errors.array() });
     }
 
     const bookID = `${booksData.length + 1}`;
@@ -82,12 +81,12 @@ const postBooks = async (req, res) => {
 
     if (doesBookExist) {
         return res
-            .status(409)
+            .status(STATUS_CODES["CONFLICT"])
             .json({
                 errors: [{
-                    message: getErrorMessage(null, req.body.title, 409),
+                    msg: getErrorMessage(null, req.body.title, 409)
                 }]
-            })
+            });
     }
 
     const updatedBooksData = [...booksData, {...req.body, bookID }];
@@ -95,7 +94,7 @@ const postBooks = async (req, res) => {
     await writeFile("db/books.json", JSON.stringify(updatedBooksData));
 
     return res
-        .status(201)
+        .status(STATUS_CODES["CREATED"])
         .json({
             bookID,
             ...req.body,
@@ -105,20 +104,22 @@ const postBooks = async (req, res) => {
 const putBooksById = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res
+            .status(STATUS_CODES["UNPROCESSABLE_ENTITY"])
+            .json({ errors: errors.array() });
     }
 
     const { bookId } = req.params;
-    const bookIndex = booksData.findIndex(({ bookID }) => bookID === bookId);
+    const bookIndex = booksData.findIndex(({ bookID }) => bookID === bookId)
 
-    if (bookIndex === -1){
+    if (bookIndex === -1) {
         return res
-            .status(404)
-            .json({
-                errors: [{
-                    message: getErrorMessage(),
+            .status(STATUS_CODES["NOT_FOUND"])
+            .json({ errors:
+                [{
+                    msg: getErrorMessage(bookId)
                 }]
-            })
+            });
     }
 
     const updatedBook = { ...booksData[bookIndex], ...req.body};
@@ -128,7 +129,7 @@ const putBooksById = async (req, res) => {
     await writeFile("db/books.json", JSON.stringify(updatedBooksData));
 
     return res
-        .status(200)
+        .status(STATUS_CODES["OK"])
         .json({
             books: updatedBook,
         })

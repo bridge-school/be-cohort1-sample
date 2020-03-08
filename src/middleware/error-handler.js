@@ -1,4 +1,5 @@
 const { logger } = require('../utils/logger');
+const { STATUS_CODES } = require('../constants')
 
 const errorHandler = (
   err,
@@ -6,9 +7,14 @@ const errorHandler = (
   res,
   next
 ) => {
-  logger.error(err.message);
-  if (!err.statusCode) err.statusCode = 500;
-  res.status(err.statusCode).send(err.message);
+    logger.error(err.message);
+    statusCode = err.statusCode || STATUS_CODES["INTERNAL_SERVER_ERROR"];
+
+    res
+        .status(statusCode)
+        .json(({
+            errors: [...err.message]
+        }));
 };
 
 module.exports = {

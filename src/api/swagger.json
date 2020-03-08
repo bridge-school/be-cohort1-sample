@@ -1,0 +1,329 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Great Reads API Documentation"
+    },
+    "paths": {
+        "/books": {
+            "delete": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Delete all books",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get all books",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/data"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Add a new book",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "body",
+                        "description": "Title of the book",
+                        "required": "true",
+                        "example": "The Heidi Chronicles"
+                    },
+                    {
+                        "name": "authors",
+                        "in": "body",
+                        "description": "Author(s) of the book",
+                        "required": "true",
+                        "example": "Wendy Wasserstein"
+                    },
+                    {
+                        "name": "average_rating",
+                        "in": "body",
+                        "description": "Average rating of the book",
+                        "required": "true",
+                        "example": "3.73"
+                    },
+                    {
+                        "name": "isbn",
+                        "in": "body",
+                        "description": "ISBN of the book",
+                        "required": "true",
+                        "example": "0822205106"
+                    },
+                    {
+                        "name": "isbn13",
+                        "in": "body",
+                        "description": "ISBN 13 of the book",
+                        "required": "true",
+                        "example": "9780822205104"
+                    },
+                    {
+                        "name": "# num_pages",
+                        "in": "body",
+                        "description": "Number of pages of the book",
+                        "required": "true",
+                        "example": "81"
+                    },
+                    {
+                        "name": "ratings_count",
+                        "in": "body",
+                        "description": "Ratings of the book",
+                        "required": "true",
+                        "example": "1348"
+                    },
+                    {
+                        "name": "text_reviews_count",
+                        "in": "body",
+                        "description": "Reviews of the book",
+                        "required": "true",
+                        "example": "70"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/data"
+                        }
+                    },
+                    "409": {
+                        "description": "A book with the same title exist",
+                        "schema": {
+                                "$ref": "#/definitions/error"
+
+                        }
+                    }
+                }
+            }
+        },
+        "/books/:bookId": {
+            "get": {
+                "summary": "Get a book by id",
+                "tags": [
+                    "Books"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/data"
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "schema": {
+                            "$ref": "#/definitions/error"
+
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a book by id",
+                "tags": [
+                    "Books"
+                ],
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "body",
+                        "description": "Title of the book",
+                        "required": "true",
+                        "example": "The Heidi Chronicles"
+                    },
+                    {
+                        "name": "authors",
+                        "in": "body",
+                        "description": "Author(s) of the book",
+                        "required": "true",
+                        "example": "Wendy Wasserstein"
+                    },
+                    {
+                        "name": "average_rating",
+                        "in": "body",
+                        "description": "Average rating of the book",
+                        "required": "true",
+                        "example": "3.73"
+                    },
+                    {
+                        "name": "isbn",
+                        "in": "body",
+                        "description": "ISBN of the book",
+                        "required": "true",
+                        "example": "0822205106"
+                    },
+                    {
+                        "name": "isbn13",
+                        "in": "body",
+                        "description": "ISBN 13 of the book",
+                        "required": "true",
+                        "example": "9780822205104"
+                    },
+                    {
+                        "name": "# num_pages",
+                        "in": "body",
+                        "description": "Number of pages of the book",
+                        "required": "true",
+                        "example": "81"
+                    },
+                    {
+                        "name": "ratings_count",
+                        "in": "body",
+                        "description": "Ratings of the book",
+                        "required": "true",
+                        "example": "1348"
+                    },
+                    {
+                        "name": "text_reviews_count",
+                        "in": "body",
+                        "description": "Reviews of the book",
+                        "required": "true",
+                        "example": "70"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/data"
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "schema": {
+                            "$ref": "#/definitions/error"
+
+                        }
+                    },
+                    "422": {
+                        "description": "Parameters validation error(s)"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a book with the given bookID",
+                "tags": [
+                    "Books"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/data"
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found",
+                        "schema": {
+                            "$ref": "#/definitions/error"
+
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "data": {
+            "type": "object",
+            "description": "Book response",
+            "properties":{
+                "data": {
+                    "type": "object",
+                    "properties": {
+
+                        "bookID": {
+                            "type": "number",
+                            "description": "The book unique ID",
+                            "example": "10"
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "The book title",
+                            "example": "The Heidi Chronicles"
+                        },
+                        "authors": {
+                            "type": "string",
+                            "description": "The book author",
+                            "example": "Wendy Wasserstein"
+                        },
+                        "average_rating": {
+                            "type": "string",
+                            "description": "The book rating",
+                            "example": "3.73"
+                        },
+                        "isbn": {
+                            "type": "string",
+                            "description": "The book isbn",
+                            "example": "0822205106"
+                        },
+                        "isbn13": {
+                            "type": "string",
+                            "description": "The book isbn 13",
+                            "example": "9780822205104"
+                        },
+                        "language_code": {
+                            "type": "string",
+                            "description": "The language of the book",
+                            "example": "en"
+                        },
+                        "# num_pages": {
+                            "type": "number",
+                            "description": "The number of pages",
+                            "example": "81"
+                        },
+                        "ratings_count": {
+                            "type": "number",
+                            "description": "The number of ratings",
+                            "example": "1348"
+                        },
+                        "text_reviews_count": {
+                            "type": "string",
+                            "description": "The number of reviews",
+                            "example": "70"
+                        }
+                    }
+                }
+            }
+        },
+        "error": {
+            "type": "object",
+            "description": "Book response",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    },
+                    "example": {
+                        "msg": "Not found"
+                    }
+                }
+            }
+        }
+    }
+}
