@@ -10,7 +10,7 @@
   },
   "author": "",
   "devDependencies": {
-    "jest": "^25.1.0",
+    "jest": "^29.6.1",
     "nodemon": "^1.17.5"
   },
   "dependencies": {
